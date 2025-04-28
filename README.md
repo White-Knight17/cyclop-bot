@@ -52,3 +52,8 @@ ENVIRONMENT=development
 WELCOME_ROLE_ID=id_rol_bienvenida
 
 ```
+
+## 📌 ¿Qué Funciona Actualmente?
+- ✔️ Asignación automática de roles al entrar al servidor
+- ✔️ Conexión estable con Discord
+- ✔️ Variables de entorno configuradas correctamente
