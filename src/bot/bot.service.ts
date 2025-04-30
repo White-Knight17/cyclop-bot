@@ -1,34 +1,33 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import { Client, GatewayIntentBits } from 'discord.js';
-import { ConfigService } from '@nestjs/config';
 
 @Injectable()
-export class BotService {
-    private readonly logger = new Logger(BotService.name);
+export class BotService implements OnModuleInit {
     public client: Client;
 
-    constructor(private config: ConfigService) {
+    constructor() {
         this.client = new Client({
             intents: [
                 GatewayIntentBits.Guilds,
-                GatewayIntentBits.GuildMembers,
+                GatewayIntentBits.GuildMembers, // Intent crítico
                 GatewayIntentBits.GuildMessages,
             ],
         });
-
-        this.setupEvents();
-        this.login();
     }
 
-    private login() {
-        this.client.login(this.config.get('DISCORD_TOKEN'))
-            .then(() => this.logger.log('Cayendo en accion X-MEN!!'))
-            .catch(err => this.logger.error('Error de conexión', err));
+    async onModuleInit() {
+        await this.login();
+        this.setupEvents();
+    }
+
+    private async login() {
+        await this.client.login(process.env.DISCORD_TOKEN);
+        console.log('✅ XMEN conectado');
     }
 
     private setupEvents() {
         this.client.on('ready', () => {
-            this.logger.log(`Aquí presentando-me  ${this.client.user?.tag}`);
+            console.log(`🟢 Bot listo como ${this.client.user?.tag}`);
         });
     }
 }

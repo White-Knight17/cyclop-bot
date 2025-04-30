@@ -2,12 +2,12 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { BotModule } from './bot/bot.module';
-import { BotService } from './bot/bot.service';
 import { ConfigModule } from '@nestjs/config';
+import { GuildMemberAddEvent } from './events/guild-member-add';
 
 @Module({
-  imports: [BotModule, ConfigModule.forRoot({ isGlobal: true, envFilePath: '.env' })],
-  controllers: [AppController],
-  providers: [AppService, BotService],
+  imports: [BotModule, ConfigModule.forRoot({ isGlobal: true, envFilePath: '.env' }),],
+  controllers: [],
+  providers: [GuildMemberAddEvent],
 })
 export class AppModule { }
