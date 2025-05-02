@@ -5,10 +5,11 @@ export const GUILD_IDS = {
 
 export const CHANNEL_IDS = {
     WELCOME: '1259863562457714790',    // Canal de bienvenidas
+    DISCORD_NOTIFICATION_CHANNEL_ID: '1289229527079452742', //CANAL DE NOTIFICACIONES
     LOGS: '',       // Canal para logs del bot
     NOTIFICATIONS: {
         YOUTUBE: '',  // Canal para notificaciones de YouTube
-        TWITCH: ''     // Canal para notificaciones de Twitch
+        TWITCH: 'garmaan'     // Canal para notificaciones de Twitch
     }
 };
 

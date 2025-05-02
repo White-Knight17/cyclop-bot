@@ -48,12 +48,12 @@ export class WelcomeService {
             family: 'Pyxxl', // Opcional: si es una fuente bold
             style: 'normal'
         });
-        ctx.font = 'bold 60px Pyxxl';
+        ctx.font = 'bold 40px Pyxxl';
 
         // 5. Dibujar texto
         ctx.fillText('¡BIENVENID@!', canvas.width / 2, 100);
         ctx.font = '40px Pyxxl';
-        ctx.fillText(member.user.tag, canvas.width / 2, canvas.height - 50);
+        ctx.fillText(`${member.user}`, canvas.width / 2, canvas.height - 50);
 
         // 6. Dibujar avatar (círculo)
         const avatarSize = 200;
