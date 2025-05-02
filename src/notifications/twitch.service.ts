@@ -64,8 +64,12 @@ export class TwitchService implements OnModuleInit {
         }, 300000); // Chequea cada 5 minutos
     }
 
-    private async sendNotification(stream) {
+    private async sendNotification(stream: any) {
         try {
+            if (!stream?.url) {
+                throw new Error(`URL del stream no definida para ${this.streamerLogin}`);
+            }
+
             const channelId = validateEnvVariable(this.config, 'TWITCH_CHANNEL_ID');
             const channel = await this.botService.client.channels.fetch(channelId);
 
@@ -89,23 +93,20 @@ export class TwitchService implements OnModuleInit {
                     footer: ({ text: `puto el que lee` })
                 };
 
-                const row = new ActionRowBuilder()
-                    .addComponents(
-                        new ButtonBuilder()
-                            .setLabel('Ver en Twitch')
-                            .setURL(stream.url)
-                            .setStyle(ButtonStyle.Link)
-                    );
-
 
                 await channel.send({
                     content: `@everyone ¡${stream.userDisplayName} está en vivo!`,
-                    embeds: [embed],
-                    components: [row]
+                    embeds: [embed]
                 });
             }
         } catch (error) {
-            console.error('Error al enviar notificación:', error);
+            console.error('Error crítico en notificación:',
+                {
+                    streamer: this.streamerLogin,
+                    error: error.message,
+                    stack: error.stack
+                }
+            );
         }
     }
 }
