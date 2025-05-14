@@ -60,13 +60,20 @@ export class TwitchService implements OnModuleInit {
         if (channel.isTextBased()) { // Filtra DM, Stage, Voice, etc.
             const embed = {
                 title: `🔴 ${stream.userDisplayName} está EN VIVO!`,
-                description: `${stream.title}\n\n(${stream.url})`,
+                description: `${stream.title}\n\n`,
+                url: `https://www.twitch.tv/${stream.userName}`,
                 color: 0x9146FF,
-                thumbnail: { url: stream.getThumbnailUrl(1280, 720) },
                 fields: [
+                    { name: 'Tiempo', value: stream.startDate.getMinutes() },
                     { name: 'Juego', value: stream.gameName || 'N/A', inline: true },
                     { name: 'Viewers', value: stream.viewers.toString(), inline: true }
-                ]
+                ],
+                image: {
+                    url: stream.getThumbnailUrl(1280, 720),
+                },
+                footer: {
+                    text: '¡No olvides saludar a @xiaine!',
+                },
             };
 
 
