@@ -2,8 +2,9 @@ import { Injectable, OnModuleInit } from '@nestjs/common';
 import { ApiClient } from '@twurple/api';
 import { AppTokenAuthProvider } from '@twurple/auth';
 import { ConfigService } from '@nestjs/config';
-import { Client } from 'discord.js';
 import { validateEnvVariable } from '../validate-env';
+import { BotService } from 'src/bot/bot.service';
+const { ButtonBuilder, ButtonStyle } = require('discord.js');
 
 @Injectable()
 export class TwitchService implements OnModuleInit {
@@ -14,7 +15,7 @@ export class TwitchService implements OnModuleInit {
 
     constructor(
         private config: ConfigService,
-        private discordClient: Client
+        private botService: BotService // Inyecta BotService
     ) {
         // Validación segura
         const clientId = validateEnvVariable(config, 'TWITCH_CLIENT_ID');
@@ -44,12 +45,12 @@ export class TwitchService implements OnModuleInit {
             } catch (error) {
                 console.error('Error checking Twitch:', error);
             }
-        }, 300000); // Chequea cada 5 minutos
+        }, 3000); // Chequea cada 5 minutos
     }
 
     private async sendNotification(stream) {
         const channelId = validateEnvVariable(this.config, 'DISCORD_NOTIFICATION_CHANNEL_ID');
-        const channel = await this.discordClient.channels.fetch(channelId);
+        const channel = await this.botService.client.channels.fetch(channelId);
 
         if (!channel || !('send' in channel)) {
             throw new Error(`El canal ${channelId} no soporta mensajes`);
@@ -59,7 +60,7 @@ export class TwitchService implements OnModuleInit {
         if (channel.isTextBased()) { // Filtra DM, Stage, Voice, etc.
             const embed = {
                 title: `🔴 ${stream.userDisplayName} está EN VIVO!`,
-                description: `${stream.title}\n\n[Ver en Twitch](${stream.url})`,
+                description: `${stream.title}\n\n(${stream.url})`,
                 color: 0x9146FF,
                 thumbnail: { url: stream.getThumbnailUrl(1280, 720) },
                 fields: [
@@ -68,7 +69,13 @@ export class TwitchService implements OnModuleInit {
                 ]
             };
 
-            await channel.send({ embeds: [embed] });
+
+
+
+            await channel.send({
+                content: `¡ @everyone está EN VIVO!`,
+                embeds: [embed],
+            });
         }
     } catch(error) {
         console.error('Error al enviar notificación:', error);
