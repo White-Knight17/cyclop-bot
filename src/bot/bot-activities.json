@@ -1,0 +1,18 @@
+[
+    {
+        "type": "PLAYING",
+        "message": "Helldivers 2"
+    },
+    {
+        "type": "WATCHING",
+        "message": "YouTube"
+    },
+    {
+        "type": "LISTENING",
+        "message": "/help"
+    },
+    {
+        "type": "COMPETING",
+        "message": "en Coding"
+    }
+]

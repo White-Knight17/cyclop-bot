@@ -3,22 +3,6 @@
   "collection": "@nestjs/schematics",
   "sourceRoot": "src",
   "compilerOptions": {
-    "assets": [
-      "assets/**"
-    ],
-    "watchAssets": true,
-    "deleteOutDir": true,
-    "webpack": true
-  },
-  "projects": {
-    "bot": {
-      "type": "library",
-      "root": "libs/bot",
-      "entryFile": "index",
-      "sourceRoot": "libs/bot/src",
-      "compilerOptions": {
-        "tsConfigPath": "libs/bot/tsconfig.lib.json"
-      }
-    }
+    "deleteOutDir": true
   }
 }

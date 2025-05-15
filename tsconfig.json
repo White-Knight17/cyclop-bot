@@ -17,13 +17,7 @@
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
-    "paths": {
-      "default/bot": [
-        "libs/bot/src"
-      ],
-      "default/bot/*": [
-        "libs/bot/src/*"
-      ]
-    }
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
   }
 }
