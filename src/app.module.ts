@@ -1,21 +1,19 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { BotModule } from './bot/bot.module';
-import { MongooseModule } from '@nestjs/mongoose';
+import { DiscordModule } from './discord/discord.module';
 import { ConfigModule } from '@nestjs/config';
-import { ActivityModule } from './activity/activity.module';
-import { RoleModule } from './role/role.module';
+import { DiscordService } from './discord/providers/discord.service'; // Ruta corregida
+import { SharedModulesModule } from './shared-modules.module';
+import configuration from './config/configuration';
 
 @Module({
-  imports: [MongooseModule.forRoot('mongodb+srv://germangiorgio1998:KingOfFighters1379@germandb.mgvn12a.mongodb.net/'),
-  ConfigModule.forRoot({
-    isGlobal: true,
-    envFilePath: '.env',
-  }),
-    BotModule, ActivityModule, RoleModule
+  imports: [
+    ConfigModule.forRoot({
+      load: [configuration],
+      isGlobal: true
+    }),
+    SharedModulesModule,
+    DiscordModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  providers: [DiscordService], // Uso corregido
 })
 export class AppModule { }
