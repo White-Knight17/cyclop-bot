@@ -3,10 +3,11 @@ import { SlashCommand, Context } from 'necord';
 import { CommandInteraction, EmbedBuilder } from 'discord.js';
 import { Injectable } from '@nestjs/common';
 import { LevelingService } from '../../../features/complex/leveling/leveling.service';
+import { RankService } from 'src/features/complex/leveling/rank.service';
 
 @Injectable()
 export class ProfileCommand {
-    constructor(private readonly levelingService: LevelingService) { }
+    constructor(private readonly levelingService: LevelingService, private readonly rankService: RankService) { }
     @SlashCommand({
         name: 'profile',
         description: 'Muestra tu perfil completo en el servidor',
@@ -23,6 +24,7 @@ export class ProfileCommand {
         const safeXp = Math.max(0, profile.xp);
         const safeCurrentLevelXp = Math.max(0, profile.currentLevelXp);
         const safeNextLevelXp = Math.max(safeCurrentLevelXp + 1, profile.nextLevelXp);
+        const rankInfo = this.rankService.getRankInfo(profile.level);
 
         const embed = new EmbedBuilder()
             .setTitle(`🏆 Perfil de ${user.username}`)
@@ -31,6 +33,8 @@ export class ProfileCommand {
             .addFields(
                 { name: 'Nivel', value: `**${profile.level}**`, inline: true },
                 { name: 'Ranking', value: `#${profile.rank}`, inline: true },
+                { name: 'Rango', value: rankInfo.name, inline: true },
+                { name: 'Multiplicador', value: `${rankInfo.multiplier}x`, inline: true },
                 { name: '\u200B', value: '\u200B', inline: true },
                 {
                     name: 'Progreso',

@@ -19,6 +19,15 @@ export class User extends Document {
     @Prop({ default: 0 })
     totalXp: number; // XP acumulada total
 
+    @Prop({ default: 0 })
+    totalMessages: number;
+
+    @Prop({ type: [String], default: [] })
+    achievements: string[];
+
+    @Prop({ type: [String], default: [] })
+    unlockedAchievements: string[];
+
     @Prop()
     lastMessageTimestamp?: Date; // Para controlar ganancia de XP
 }
