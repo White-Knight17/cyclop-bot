@@ -1,11 +1,11 @@
 // discord/commands/commands.module.ts
 import { Module } from '@nestjs/common';
-import { PingCommand } from './fun/ping.command';
-import { ProfileCommand } from './utility/profile.command';
-import { LevelingModule } from 'src/features/complex/leveling/leveling.module';
+import { AdminCommandsModule } from './admin/admin.module';
+import { UtilityCommandModule } from './utility/utility.command.module';
+
 
 @Module({
-    providers: [PingCommand, ProfileCommand],
-    imports: [LevelingModule]
+    providers: [],
+    imports: [AdminCommandsModule, UtilityCommandModule]
 })
 export class CommandsModule { }

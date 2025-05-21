@@ -24,6 +24,11 @@ import { EventsModule } from './events/events.module';
                         'GuildMembers',
                         'MessageContent',
                     ],
+                    permissions: [
+                        'ManageRoles', // Para crear/asignar roles
+                        'ViewChannel',
+                        'SendMessages'
+                    ],
                     development: false,
                 };
             },
