@@ -4,6 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 import { DiscordService } from './discord/providers/discord.service'; // Ruta corregida
 import { SharedModulesModule } from './shared-modules.module';
 import configuration from './config/configuration';
+import { AutoRoleModule } from './features/autorole/autorole.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import configuration from './config/configuration';
       isGlobal: true
     }),
     SharedModulesModule,
+    AutoRoleModule,
     DiscordModule,
   ],
   providers: [DiscordService], // Uso corregido
