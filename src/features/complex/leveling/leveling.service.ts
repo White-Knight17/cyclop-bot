@@ -1,12 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { User } from '../../../database/schemas/user.schema';
-import { LevelRewardsService } from './level-rewards.service';
-import { AchievementsService } from './achievements.service';
+import { User } from 'src/database/schemas/user.schema';
 import { XpMultipliersService } from './xp-multipliers.service';
-import { Client, GuildMember } from 'discord.js';
-import { LevelingConfig, RankConfig } from '../../../config/leveling.config';
+import { GuildMember } from 'discord.js';
+import { LevelingConfig, RankConfig } from 'src/config/leveling.config';
 import { LevelUpResult } from 'src/common/interfaces/level-up';
 import { RankService } from './rank.service';
 
@@ -16,10 +14,7 @@ export class LevelingService {
 
     constructor(
         @InjectModel(User.name) private userModel: Model<User>,
-        private readonly levelRewards: LevelRewardsService,
-        private readonly achievements: AchievementsService,
         private readonly xpMultipliers: XpMultipliersService,
-        private readonly client: Client,
         private readonly rankService: RankService,
     ) { }
 
@@ -38,7 +33,6 @@ export class LevelingService {
         );
 
         const rankInfo = this.rankService.getRankInfo(updatedUser.level);
-        const xpWithMultiplier = xpToAdd * rankInfo.multiplier;
 
         // Asignar rol de rango
         const rankRole = member.guild.roles.cache.find(r => r.name === rankInfo.name);

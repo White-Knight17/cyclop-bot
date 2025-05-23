@@ -5,6 +5,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { DiscordService } from './providers/discord.service';
 import { CommandsModule } from './commands/commands.module';
 import { EventsModule } from './events/events.module';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { ErrorInterceptor } from 'src/common/interceptors/error.interceptor';
 
 @Module({
     imports: [
@@ -22,6 +24,7 @@ import { EventsModule } from './events/events.module';
                         'Guilds',
                         'GuildMessages',
                         'GuildMembers',
+                        'GuildPresences',
                         'MessageContent',
                     ],
                     permissions: [
@@ -37,6 +40,11 @@ import { EventsModule } from './events/events.module';
         CommandsModule,
         EventsModule,
     ],
-    providers: [DiscordService],
+    providers: [DiscordService,
+        {
+            provide: APP_INTERCEPTOR,
+            useClass: ErrorInterceptor,
+        }
+    ],
 })
 export class DiscordModule { }

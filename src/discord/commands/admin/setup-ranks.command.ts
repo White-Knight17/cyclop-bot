@@ -1,8 +1,8 @@
 import { SlashCommand, Context } from 'necord';
 import { ChatInputCommandInteraction, EmbedBuilder, Role, Guild } from 'discord.js';
 import { Injectable, UseGuards } from '@nestjs/common';
-import { RankConfig } from '../../../config/leveling.config';
-import { AdminGuard } from '../../../common/guards/admin.guard';
+import { RankConfig } from 'src/config/leveling.config';
+import { AdminGuard } from 'src/common/guards/admin.guard';
 
 
 @Injectable()
@@ -10,11 +10,11 @@ import { AdminGuard } from '../../../common/guards/admin.guard';
 export class SetupRanksCommand {
     @SlashCommand({
         name: 'setup-ranks',
-        description: 'Crea todos los roles de rangos automáticamente'
+        description: 'Crea todos los roles de rangos automáticamente',
+        defaultMemberPermissions: 'Administrator',
     })
 
     async run(@Context() [interaction]: [ChatInputCommandInteraction]) {
-        // Verificación más estricta del guild
         if (!interaction.inGuild() || !interaction.guild) {
             return interaction.reply({
                 content: '❌ Este comando solo funciona en servidores',

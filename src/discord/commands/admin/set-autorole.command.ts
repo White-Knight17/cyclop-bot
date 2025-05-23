@@ -1,54 +1,44 @@
-// src/discord/commands/admin/set-autorole.command.ts
-import { SlashCommand, Context, Options, RoleOption } from 'necord';
-import { CommandInteraction, EmbedBuilder, Role, MessageFlags } from 'discord.js';
-import { Injectable, UseGuards } from '@nestjs/common';
-import { AdminGuard } from '../../../common/guards/admin.guard';
-import { AutoRoleService } from '../../../features/autorole/autorole.service';
+// src/features/autorole/autorole.command.ts
+import { SlashCommand, Context, SlashCommandContext, Options, Subcommand } from 'necord';
+import { AutoRoleService } from 'src/features/autorole/autorole.service';
+import { AdminGuard } from 'src/common/guards/admin.guard';
+import { UseGuards } from '@nestjs/common';
+import { RoleOptionDto } from './option.dto';
 
-class SetAutoRoleOptions {
-    @RoleOption({
-        name: 'rol',
-        description: 'Rol a asignar automáticamente',
-        required: true
-    })
-    role: Role; // Ahora recibimos el objeto Role directamente
-}
-
-@Injectable()
 @UseGuards(AdminGuard)
-export class SetAutoRoleCommand {
+@SlashCommand({
+    name: 'autorole',
+    description: 'Configuración de roles automáticos',
+    defaultMemberPermissions: 'Administrator',
+})
+export class AutoRoleCommand {
     constructor(private readonly autoRoleService: AutoRoleService) { }
 
-    @SlashCommand({
-        name: 'set-autorole',
-        description: 'Configura el rol que se asigna automáticamente al ingresar'
+    @Subcommand({
+        name: 'set',
+        description: 'Establece el rol automático'
     })
-
-
-    async run(
-        @Context() [interaction]: [CommandInteraction],
-        @Options() { role }: SetAutoRoleOptions // Recibimos el Role completo
+    public async setRole(
+        @Context() [interaction]: SlashCommandContext,
+        @Options() { role }: RoleOptionDto
     ) {
-        if (!interaction.inGuild() || !interaction.guild) return;
+        if (!interaction.guildId) {
+            return interaction.reply({
+                content: '❌ Este comando solo puede usarse en un servidor.',
+                ephemeral: true,
+            });
+        }
 
         try {
-            // Guardar configuración
-            await this.autoRoleService.setAutoRole(interaction.guild.id, role.id);
-
-            const embed = new EmbedBuilder()
-                .setTitle('✅ Auto-Rol Configurado')
-                .setDescription(`Ahora se asignará el rol ${role.name} a los nuevos miembros`)
-                .setColor('#00FF00');
-
+            await this.autoRoleService.setAutoRole(interaction.guildId, role.id);
             return interaction.reply({
-                embeds: [embed],
-                flags: MessageFlags.Ephemeral // Forma correcta en v14
+                content: `✅ Rol automático establecido a: ${role.name}`,
+                ephemeral: true,
             });
         } catch (error) {
-            console.error(error);
             return interaction.reply({
-                content: '❌ Error al configurar el auto-rol',
-                flags: MessageFlags.Ephemeral
+                content: `❌ Error: ${error.message}`,
+                ephemeral: true,
             });
         }
     }

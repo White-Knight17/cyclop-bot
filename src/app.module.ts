@@ -5,6 +5,7 @@ import { DiscordService } from './discord/providers/discord.service'; // Ruta co
 import { SharedModulesModule } from './shared-modules.module';
 import configuration from './config/configuration';
 import { AutoRoleModule } from './features/autorole/autorole.module';
+import { ActivitiesModule } from './features/activities/activities.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { AutoRoleModule } from './features/autorole/autorole.module';
     SharedModulesModule,
     AutoRoleModule,
     DiscordModule,
+    ActivitiesModule,
   ],
   providers: [DiscordService], // Uso corregido
 })

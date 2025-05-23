@@ -18,9 +18,10 @@ import { RankService } from './rank.service'; // Nueva importación
         AchievementsService,
         LevelRewardsService,
         XpMultipliersService,
-        RankService // Añadido aquí
+        RankService
     ],
     exports: [
+        AchievementsService,
         LevelingService,
         RankService // Exportado si otros módulos lo necesitan
     ]

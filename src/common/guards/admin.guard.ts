@@ -1,39 +1,44 @@
-// src/common/guards/admin.guard.ts
 import { CanActivate, ExecutionContext, Injectable, Logger } from '@nestjs/common';
 import { NecordExecutionContext } from 'necord';
-import { CommandInteraction, GuildMember, PermissionsBitField } from 'discord.js';
+import { ChatInputCommandInteraction, PermissionsBitField } from 'discord.js';
 
 @Injectable()
 export class AdminGuard implements CanActivate {
     private readonly logger = new Logger(AdminGuard.name);
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
-        try {
-            const ctx = NecordExecutionContext.create(context);
-            const [interaction] = ctx.getContext<[CommandInteraction]>(); // Nota el array [CommandInteraction]
+        const ctx = NecordExecutionContext.create(context);
+        const [interaction] = ctx.getContext<[ChatInputCommandInteraction]>();
 
-            if (!interaction.inGuild()) {
-                this.logger.warn(`Intento de uso fuera de servidor: ${interaction.user.tag}`);
-                return false;
-            }
-
-            const member = interaction.member as GuildMember;
-            const isAdmin = member.permissions.has(PermissionsBitField.Flags.Administrator);
-
-            if (!isAdmin) {
-                this.logger.warn(`Acceso denegado a ${interaction.user.tag}`);
-                if (interaction.isRepliable()) {
-                    await interaction.reply({
-                        content: '❌ Solo los administradores pueden usar este comando',
-                        ephemeral: true
-                    });
-                }
-            }
-
-            return isAdmin;
-        } catch (error) {
-            this.logger.error(`Error en AdminGuard: ${error.message}`);
+        // Verificar si es un comando de chat y está en un servidor
+        if (!interaction.inGuild() || !interaction.isChatInputCommand()) {
+            this.logger.warn(`Intento de uso no válido: ${interaction.user.tag}`);
             return false;
         }
+
+        // Verificar permisos
+        const isAdmin = interaction.memberPermissions?.has(PermissionsBitField.Flags.Administrator);
+
+        if (!isAdmin) {
+            this.logWarn(interaction);
+            await this.sendDenialResponse(interaction);
+        }
+
+        return !!isAdmin;
+    }
+
+    private logWarn(interaction: ChatInputCommandInteraction) {
+        this.logger.warn(`Acceso denegado a ${interaction.user.tag}`);
+    }
+
+    private async sendDenialResponse(interaction: ChatInputCommandInteraction) {
+        if (interaction.replied || interaction.deferred) return;
+
+        await interaction.reply({
+            content: '❌ Solo los administradores pueden usar este comando',
+            ephemeral: true
+        }).catch(error =>
+            this.logger.error(`Error al responder: ${error.message}`)
+        );
     }
 }
