@@ -28,7 +28,7 @@ import { ErrorInterceptor } from 'src/common/interceptors/error.interceptor';
                         'MessageContent',
                     ],
                     permissions: [
-                        'ManageRoles', // Para crear/asignar roles
+                        'ManageRoles',
                         'ViewChannel',
                         'SendMessages'
                     ],
@@ -40,7 +40,8 @@ import { ErrorInterceptor } from 'src/common/interceptors/error.interceptor';
         CommandsModule,
         EventsModule,
     ],
-    providers: [DiscordService,
+    providers: [
+        DiscordService,
         {
             provide: APP_INTERCEPTOR,
             useClass: ErrorInterceptor,

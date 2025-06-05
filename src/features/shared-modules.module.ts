@@ -1,7 +1,6 @@
-// src/shared-modules.module.ts
 import { Module } from '@nestjs/common';
-import { LevelingModule } from './features/complex/leveling/leveling.module';
-import { DatabaseModule } from './database/database.module';
+import { LevelingModule } from './leveling/leveling.module';
+import { DatabaseModule } from 'src/database/database.module';
 
 @Module({
     imports: [DatabaseModule, LevelingModule],

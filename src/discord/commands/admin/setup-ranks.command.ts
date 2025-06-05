@@ -1,7 +1,7 @@
 import { SlashCommand, Context } from 'necord';
 import { ChatInputCommandInteraction, EmbedBuilder, Role, Guild } from 'discord.js';
 import { Injectable, UseGuards } from '@nestjs/common';
-import { RankConfig } from 'src/config/leveling.config';
+import { RankConfig } from 'src/features/leveling/config/leveling.config';
 import { AdminGuard } from 'src/common/guards/admin.guard';
 
 

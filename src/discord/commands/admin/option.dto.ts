@@ -1,5 +1,5 @@
-import { Role } from 'discord.js';
-import { RoleOption, StringOption } from 'necord';
+import { Role, TextChannel } from 'discord.js';
+import { RoleOption, StringOption, ChannelOption, } from 'necord';
 
 export class RoleOptionDto {
     @RoleOption({
@@ -19,3 +19,12 @@ export class ResetLevelDto {
     userId: string; // Recibirá el ID del usuario como string
 }
 
+
+export class WelcomeChannelDto {
+    @ChannelOption({
+        name: 'channel',
+        description: 'Canal para mensajes de bienvenida',
+        required: true,
+    })
+    channel: TextChannel;
+}

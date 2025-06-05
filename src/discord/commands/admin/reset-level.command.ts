@@ -1,9 +1,9 @@
 import { SlashCommand, Context, Options } from 'necord';
 import { ChatInputCommandInteraction, EmbedBuilder, User } from 'discord.js';
 import { Injectable, UseGuards } from '@nestjs/common';
-import { LevelingService } from 'src/features/complex/leveling/leveling.service';
+import { LevelingService } from 'src/features/leveling/leveling.service';
 import { AdminGuard } from 'src/common/guards/admin.guard';
-import { ResetLevelDto } from './option.dto'; // Asegúrate de que la ruta sea correcta
+import { ResetLevelDto } from './option.dto';
 
 
 @SlashCommand({

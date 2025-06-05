@@ -2,11 +2,6 @@ export const LevelingConfig = {
     xpRange: { min: 5, max: 15 },
     cooldown: 60000, // 1 minuto
     levelFormula: (level: number) => Math.floor(5 * Math.pow(level, 2) + 50 * level + 100),
-    rewards: {
-        5: { role: 'Aprendiz', bonus: 1.2 },
-        10: { role: 'Experto', bonus: 1.5 },
-        20: { role: 'Veterano', bonus: 2.0 }
-    }
 };
 
 
@@ -77,7 +72,7 @@ export const RankConfig = {
         }
     ],
     // Niveles totales = sumatoria de levels de cada rango (5+5+5+5+5+5+3+3+1 = 37 niveles)
-    getTotalLevels() {
-        return this.ranks.reduce((sum, rank) => sum + rank.levels, 0);
+    getRank(level: number) {
+        return this.ranks.find(r => level <= r.maxLevel) || this.ranks[this.ranks.length - 1];
     }
 };

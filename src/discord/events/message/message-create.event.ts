@@ -1,7 +1,7 @@
 import { On } from 'necord';
 import { Injectable } from '@nestjs/common';
 import { Events, Message } from 'discord.js';
-import { LevelingService } from '../../../features/complex/leveling/leveling.service';
+import { LevelingService } from '../../../features/leveling/leveling.service';
 
 
 const COOLDOWN = 60000; // 1 minuto

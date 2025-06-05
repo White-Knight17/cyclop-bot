@@ -1,12 +1,12 @@
+import { User } from 'src/database/schemas/user.schema';
+import { XpMultipliersService } from './xp-multipliers.service';
+import { LevelingConfig, RankConfig } from 'src/features/leveling/config/leveling.config';
+import { LevelUpResult } from 'src/common/interfaces/level-up';
+import { RankService } from './rank.service';
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { User } from 'src/database/schemas/user.schema';
-import { XpMultipliersService } from './xp-multipliers.service';
 import { GuildMember } from 'discord.js';
-import { LevelingConfig, RankConfig } from 'src/config/leveling.config';
-import { LevelUpResult } from 'src/common/interfaces/level-up';
-import { RankService } from './rank.service';
 
 @Injectable()
 export class LevelingService {
@@ -62,35 +62,16 @@ export class LevelingService {
         return { leveledUp: false };
     }
 
-    // private calculateXpBonus(member: GuildMember): number {
-    //     let bonus = 1.0;
-    //     // Bonus por roles de recompensa
-    //     Object.entries(LevelingConfig.rewards).forEach(([level, config]) => {
-    //         if (member.roles.cache.some(r => r.name === config.role)) {
-    //             bonus *= config.bonus;
-    //         }
-    //     });
-    //     return bonus;
-    // }
 
     private async handleLevelUp(user: User, member: GuildMember) {
-        // Asignar roles automáticos
-        for (const [level, config] of Object.entries(LevelingConfig.rewards)) {
-            if (user.level >= parseInt(level)) {
-                const role = member.guild.roles.cache.find(r => r.name === config.role);
-                if (role && !member.roles.cache.has(role.id)) {
-                    await member.roles.add(role);
-                }
-            }
-        }
+        // Solo asignar rol de rango (ya lo haces en addXp)
+        const rankInfo = this.rankService.getRankInfo(user.level);
+        const rankRole = member.guild.roles.cache.find(r => r.name === rankInfo.name);
+        if (rankRole) await member.roles.add(rankRole);
 
-        // Notificación en un canal específico
-        const notifyChannel = member.guild.systemChannel;
-        if (notifyChannel) {
-            await notifyChannel.send(
-                `🎉 ¡Felicidades <@${user.discordId}>! Has alcanzado el nivel ${user.level}`
-            );
-        }
+        // Notificación (opcional)
+        member.guild.systemChannel?.send(`🎉 <@${user.discordId}> subió al nivel ${user.level} (${rankInfo.name})`);
+
     }
 
     async getProfile(userId: string) {

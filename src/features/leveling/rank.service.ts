@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { RankConfig } from '../../../config/leveling.config';
+import { RankConfig } from './config/leveling.config';
 import { Client, Guild, Role } from 'discord.js';
 
 @Injectable()
@@ -37,7 +37,7 @@ export class RankService {
     }
 
     private getNextRankInfo(currentLevel: number) {
-        if (currentLevel >= RankConfig.getTotalLevels()) return null;
+        if (currentLevel >= RankConfig.getRank(currentLevel)) return null;
 
         let accumulatedLevels = 0;
         for (const rank of RankConfig.ranks) {

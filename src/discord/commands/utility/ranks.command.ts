@@ -1,8 +1,8 @@
 import { Context, createCommandGroupDecorator, Subcommand } from 'necord';
 import { Injectable } from '@nestjs/common';
 import { ChatInputCommandInteraction, EmbedBuilder, Colors, CommandInteraction, MessageFlags } from 'discord.js';
-import { LevelingService } from 'src/features/complex/leveling/leveling.service';
-import { RankService } from 'src/features/complex/leveling/rank.service';
+import { LevelingService } from 'src/features/leveling/leveling.service';
+import { RankService } from 'src/features/leveling/rank.service';
 
 export const RanksCommandDecorator = createCommandGroupDecorator({
     name: 'rangos',

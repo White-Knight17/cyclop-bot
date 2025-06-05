@@ -1,7 +1,7 @@
 import { SlashCommand, Context } from 'necord';
 import { ChatInputCommandInteraction, EmbedBuilder } from 'discord.js';
 import { Injectable } from '@nestjs/common';
-import { AchievementsService } from 'src/features/complex/leveling/achievements.service';
+import { AchievementsService } from 'src/features/leveling/achievements.service';
 
 @Injectable()
 
