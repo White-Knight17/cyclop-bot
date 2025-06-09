@@ -258,4 +258,4 @@ Si necesitas ayuda o tienes alguna sugerencia:
 
 ---
 
-*Desarrollado con ❤️ por WHite-Knight*
+*Desarrollado con ❤️ por White-Knight*
