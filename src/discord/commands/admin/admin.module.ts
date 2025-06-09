@@ -9,10 +9,12 @@ import { ActivitiesCommand } from './activities.command';
 import { WelcomeCommand } from './welcome.command';
 import { WelcomeModule } from 'src/features/welcome/welcome.module';
 import { TestWelcomeCommand } from './set-welcome';
+import { TwitchModule } from 'src/features/twitch/twitch.module';
+import { TwitchCommand } from './twitch.command';
 
 @Module({
-    imports: [AutoRoleModule, LevelingModule, ActivitiesModule, WelcomeModule],
-    providers: [SetupRanksCommand, ResetLevelCommand, AutoRoleCommand, ActivitiesCommand, WelcomeCommand, TestWelcomeCommand],
+    imports: [AutoRoleModule, LevelingModule, ActivitiesModule, WelcomeModule, TwitchModule],
+    providers: [TwitchCommand, SetupRanksCommand, ResetLevelCommand, AutoRoleCommand, ActivitiesCommand, WelcomeCommand, TestWelcomeCommand],
     exports: [],
     controllers: [],
 

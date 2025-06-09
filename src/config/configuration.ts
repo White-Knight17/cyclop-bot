@@ -11,4 +11,8 @@ export default () => ({
         ]
     },
     MONGO_DB_URI: process.env.MONGO_URI,
+    twitch: {
+        clientId: process.env.TWITCH_CLIENT_ID || '',
+        clientSecret: process.env.TWITCH_CLIENT_SECRET || '',
+    }
 })

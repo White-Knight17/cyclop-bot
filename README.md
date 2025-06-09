@@ -23,6 +23,14 @@
 - Soporte para múltiples canales
 - Sistema de fallback para imágenes
 
+### 📺 Sistema de Notificaciones Twitch
+- Notificaciones en tiempo real de streams
+- Embeds personalizados con información del stream
+- Configuración por servidor
+- Soporte para múltiples streamers
+- Mensajes personalizables
+- Notificaciones de inicio y fin de stream
+
 ### 👥 Gestión de Roles
 - Asignación automática de roles
 - Sistema de niveles con roles progresivos
@@ -40,6 +48,7 @@
 - Configuración de bienvenidas
 - Gestión de roles
 - Estadísticas del servidor
+- Sistema de notificaciones Twitch
 
 ## 🚀 Tecnologías
 
@@ -93,6 +102,8 @@ cp .env.example .env
 ```env
 DISCORD_TOKEN=tu_token_aquí
 MONGODB_URI=tu_uri_de_mongodb
+TWITCH_CLIENT_ID=tu_client_id
+TWITCH_CLIENT_SECRET=tu_client_secret
 ```
 
 5. Inicia el bot:
@@ -113,6 +124,8 @@ npm run start:prod
 | `DISCORD_TOKEN` | Token del bot de Discord | Sí |
 | `MONGODB_URI` | URI de conexión a MongoDB | Sí |
 | `NODE_ENV` | Entorno (development/production) | No |
+| `TWITCH_CLIENT_ID` | ID de cliente de Twitch | Sí |
+| `TWITCH_CLIENT_SECRET` | Secret de cliente de Twitch | Sí |
 
 ### Permisos del Bot
 El bot requiere los siguientes permisos en el servidor:
@@ -185,6 +198,11 @@ El bot requiere los siguientes permisos en el servidor:
     │       ├── autorole.service.ts
     │       └── autorole.module.ts
     │
+    ├── twitch/             # Sistema de notificaciones Twitch
+    │   ├── twitch.service.ts
+    │   ├── twitch.module.ts
+    │   └── twitch.repository.ts
+    │
     ├── app.module.ts           # Módulo raíz
     ├── main.ts                # Punto de entrada
     └── discord-config.service.ts
@@ -209,6 +227,32 @@ El bot requiere los siguientes permisos en el servidor:
 - Roles temporales
 - Protección de roles
 - Gestión de permisos
+
+### Módulo de Twitch (`TwitchModule`)
+- Integración con la API de Twitch
+- Notificaciones automáticas de streams
+- Sistema de configuración por servidor
+- Gestión de múltiples streamers
+- Embeds personalizados
+- Comandos de administración
+
+#### Comandos de Twitch
+| Comando | Descripción | Permisos |
+|---------|-------------|-----------|
+| `/twitch channel` | Configura el canal de notificaciones | Administrador |
+| `/twitch add` | Agrega un streamer para seguir | Administrador |
+| `/twitch remove` | Elimina un streamer de la lista | Administrador |
+| `/twitch settings` | Configura opciones de notificación | Administrador |
+| `/twitch test` | Prueba las notificaciones | Administrador |
+
+#### Configuración de Twitch
+- **Canal de Notificaciones**: Canal donde se enviarán las notificaciones
+- **Streamers**: Lista de streamers a seguir
+- **Opciones**:
+  - Activar/desactivar notificaciones
+  - Notificar inicio de stream
+  - Notificar fin de stream
+  - Mensaje personalizado
 
 ## 🎮 Comandos
 
