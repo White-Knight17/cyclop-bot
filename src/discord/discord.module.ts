@@ -7,6 +7,7 @@ import { CommandsModule } from './commands/commands.module';
 import { EventsModule } from './events/events.module';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { ErrorInterceptor } from 'src/common/interceptors/error.interceptor';
+import { Partials } from 'discord.js';
 
 @Module({
     imports: [
@@ -27,18 +28,17 @@ import { ErrorInterceptor } from 'src/common/interceptors/error.interceptor';
                         'GuildPresences',
                         'MessageContent',
                     ],
-                    permissions: [
-                        'ManageRoles',
-                        'ViewChannel',
-                        'SendMessages'
+                    partials: [
+                        Partials.GuildMember,
+                        Partials.User,
                     ],
                     development: false,
                 };
             },
             inject: [ConfigService],
         }),
-        CommandsModule,
         EventsModule,
+        CommandsModule,
     ],
     providers: [
         DiscordService,

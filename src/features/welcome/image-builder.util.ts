@@ -1,81 +1,145 @@
-import { Injectable } from '@nestjs/common';
-import { createCanvas, loadImage, registerFont } from 'canvas';
+import { Injectable, Logger } from '@nestjs/common';
+import { createCanvas, loadImage, registerFont, Canvas, CanvasRenderingContext2D as NodeCanvasRenderingContext2D, Image } from 'canvas';
 import { join } from 'path';
 import { GuildMember } from 'discord.js';
 
 @Injectable()
 export class ImageBuilderUtil {
+    private readonly logger = new Logger(ImageBuilderUtil.name);
+    private readonly canvasWidth = 1024;
+    private readonly canvasHeight = 500;
+    private readonly avatarSize = 200;
+    private readonly avatarX = 412;
+    private readonly avatarY = 100;
+
     constructor() {
+        this.initializeFonts();
+    }
+
+    private initializeFonts(): void {
         try {
-            // Registrar fuentes (si usas custom)
-            registerFont(join(__dirname, '../../../assets/fonts/Roboto-Bold.ttf'), {
+            const fontPath = join(__dirname, '../../../assets/fonts/Roboto-Bold.ttf');
+            registerFont(fontPath, {
                 family: 'Roboto',
                 weight: 'bold'
             });
+            this.logger.log('Fuente Roboto cargada correctamente');
         } catch (error) {
-            console.warn('⚠ Fuente no cargada:', error.message);
+            this.logger.warn(`No se pudo cargar la fuente Roboto: ${error.message}`);
         }
     }
 
     async generateWelcomeCard(member: GuildMember): Promise<Buffer> {
-        const canvas = createCanvas(1024, 500);
-        const ctx = canvas.getContext('2d');
+        const startTime = Date.now();
+        try {
+            const canvas = createCanvas(this.canvasWidth, this.canvasHeight);
+            const ctx = canvas.getContext('2d');
 
-        // --- 1. Fondo ---
+            await this.drawBackground(ctx);
+            await this.drawAvatar(ctx, member);
+            this.drawText(ctx, member);
+
+            const buffer = canvas.toBuffer('image/png');
+            const generationTime = Date.now() - startTime;
+
+            this.logger.debug(
+                `Imagen de bienvenida generada para ${member.user.tag} en ${generationTime}ms`
+            );
+
+            return buffer;
+        } catch (error) {
+            this.logger.error(
+                `Error al generar imagen de bienvenida para ${member.user.tag}: ${error.message}`
+            );
+            throw error;
+        }
+    }
+
+    private async drawBackground(ctx: NodeCanvasRenderingContext2D): Promise<void> {
         try {
             const bgPath = join(__dirname, '../../../assets/images/welcome-bg.png');
             const background = await loadImage(bgPath);
-            ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
+            ctx.drawImage(background as Image, 0, 0, this.canvasWidth, this.canvasHeight);
         } catch (error) {
-            console.warn('⚠ Usando fondo de respaldo:', error.message);
-            ctx.fillStyle = '#36393F'; // Color si falla la imagen
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            this.logger.warn(`Usando fondo de respaldo: ${error.message}`);
+            ctx.fillStyle = '#36393F';
+            ctx.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
         }
+    }
 
-        // --- 2. Avatar circular ---
-        const avatarUrl = member.user.displayAvatarURL({ extension: 'jpg', size: 256 });
-        const avatar = await loadImage(avatarUrl);
-        const avatarSize = 200;
-        const avatarX = 412;
-        const avatarY = 100;
+    private async drawAvatar(ctx: NodeCanvasRenderingContext2D, member: GuildMember): Promise<void> {
+        try {
+            const avatarUrl = member.user.displayAvatarURL({
+                extension: 'jpg',
+                size: 256,
+                forceStatic: true // Forzar imagen estática para mejor rendimiento
+            });
 
-        // Crear máscara circular
-        ctx.save();
-        ctx.beginPath();
-        ctx.arc(avatarX + avatarSize / 2, avatarY + avatarSize / 2, avatarSize / 2, 0, Math.PI * 2);
-        ctx.closePath();
-        ctx.clip();
-        ctx.drawImage(avatar, avatarX, avatarY, avatarSize, avatarSize);
-        ctx.restore();
+            const avatar = await loadImage(avatarUrl);
 
-        // --- 3. Texto ---
-        ctx.textAlign = 'center';
+            // Crear máscara circular con borde
+            ctx.save();
+            ctx.beginPath();
+            const centerX = this.avatarX + this.avatarSize / 2;
+            const centerY = this.avatarY + this.avatarSize / 2;
+            const radius = this.avatarSize / 2;
 
-        // Gradiente para el texto principal
-        const gradient = ctx.createLinearGradient(300, 330, 724, 330);
-        gradient.addColorStop(0, '#FF7F50'); // Coral
-        gradient.addColorStop(0.5, '#FFD700'); // Oro
-        gradient.addColorStop(1, '#40E0D0'); // Turquesa
+            // Dibujar borde blanco
+            ctx.arc(centerX, centerY, radius + 5, 0, Math.PI * 2);
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fill();
 
-        // Texto con borde para mejor legibilidad
-        ctx.font = 'bold 60px "Roboto", Arial';
-        ctx.strokeStyle = '#000000';
-        ctx.lineWidth = 4;
-        ctx.strokeText(member.user.displayName, 512, 350);
-        ctx.fillStyle = gradient;
-        ctx.fillText(member.user.displayName, 512, 350);
+            // Dibujar avatar
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+            ctx.closePath();
+            ctx.clip();
+            ctx.drawImage(avatar as Image, this.avatarX, this.avatarY, this.avatarSize, this.avatarSize);
+            ctx.restore();
+        } catch (error) {
+            this.logger.error(`Error al dibujar avatar: ${error.message}`);
+            throw error;
+        }
+    }
 
-        // Texto de bienvenida
-        ctx.font = 'bold 40px "Roboto", Arial';
-        ctx.strokeStyle = '#000000';
-        ctx.lineWidth = 3;
-        ctx.strokeText('¡Bienvenido a nuestra comunidad!', 512, 400);
-        ctx.fillStyle = '#FFFFFF';
-        ctx.fillText('¡Bienvenido a nuestra comunidad!', 512, 400);
+    private drawText(ctx: NodeCanvasRenderingContext2D, member: GuildMember): void {
+        try {
+            ctx.textAlign = 'center';
 
-        // Resetear sombra
-        ctx.shadowColor = 'transparent';
+            // Gradiente para el nombre
+            const gradient = ctx.createLinearGradient(300, 330, 724, 330);
+            gradient.addColorStop(0, '#FF7F50');
+            gradient.addColorStop(0.5, '#FFD700');
+            gradient.addColorStop(1, '#40E0D0');
 
-        return canvas.toBuffer('image/png');
+            // Nombre del usuario con borde
+            ctx.font = 'bold 60px "Roboto", Arial';
+            ctx.strokeStyle = '#000000';
+            ctx.lineWidth = 4;
+            ctx.strokeText(member.user.displayName, this.canvasWidth / 2, 350);
+            ctx.fillStyle = gradient;
+            ctx.fillText(member.user.displayName, this.canvasWidth / 2, 350);
+
+            // Texto de bienvenida con sombra
+            ctx.font = 'bold 40px "Roboto", Arial';
+            ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+            ctx.shadowBlur = 5;
+            ctx.shadowOffsetX = 2;
+            ctx.shadowOffsetY = 2;
+            ctx.strokeStyle = '#000000';
+            ctx.lineWidth = 3;
+            ctx.strokeText('¡Bienvenido a nuestra comunidad!', this.canvasWidth / 2, 400);
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillText('¡Bienvenido a nuestra comunidad!', this.canvasWidth / 2, 400);
+
+            // Resetear efectos
+            ctx.shadowColor = 'transparent';
+            ctx.shadowBlur = 0;
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = 0;
+        } catch (error) {
+            this.logger.error(`Error al dibujar texto: ${error.message}`);
+            throw error;
+        }
     }
 }
