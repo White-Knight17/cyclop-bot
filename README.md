@@ -43,12 +43,17 @@
 - Rangos automáticos
 - Tabla de clasificación
 
-### 🛠️ Herramientas de Administración
-- Comandos de moderación
-- Configuración de bienvenidas
-- Gestión de roles
-- Estadísticas del servidor
-- Sistema de notificaciones Twitch
+### 🛡️ Sistema de Permisos
+- Gestión granular de permisos
+- Roles administrativos personalizables
+- Sistema de verificación de permisos
+- Protección de comandos sensibles
+
+### 🎯 Sistema de Actividades
+- Seguimiento de actividades de usuarios
+- Estadísticas de participación
+- Eventos especiales
+- Recompensas por participación
 
 ## 🚀 Tecnologías
 
@@ -79,6 +84,8 @@
 - `GuildMembers`
 - `GuildPresences`
 - `MessageContent`
+- `ManageRoles`
+- `ManageChannels`
 
 ## 📦 Instalación
 
@@ -203,6 +210,12 @@ El bot requiere los siguientes permisos en el servidor:
     │   ├── twitch.module.ts
     │   └── twitch.repository.ts
     │
+    ├── permissions/        # Sistema de permisos
+    │   └── permissions.service.ts
+    │
+    ├── activities/           # Sistema de actividades
+    │   └── activities.service.ts
+    │
     ├── app.module.ts           # Módulo raíz
     ├── main.ts                # Punto de entrada
     └── discord-config.service.ts
@@ -239,11 +252,11 @@ El bot requiere los siguientes permisos en el servidor:
 #### Comandos de Twitch
 | Comando | Descripción | Permisos |
 |---------|-------------|-----------|
-| `/twitch channel` | Configura el canal de notificaciones | Administrador |
-| `/twitch add` | Agrega un streamer para seguir | Administrador |
-| `/twitch remove` | Elimina un streamer de la lista | Administrador |
-| `/twitch settings` | Configura opciones de notificación | Administrador |
-| `/twitch test` | Prueba las notificaciones | Administrador |
+| `/twitch channel` | Configura el canal de notificaciones | `ManageGuild` |
+| `/twitch add` | Agrega un streamer para seguir | `ManageGuild` |
+| `/twitch remove` | Elimina un streamer de la lista | `ManageGuild` |
+| `/twitch settings` | Configura opciones de notificación | `ManageGuild` |
+| `/twitch test` | Prueba las notificaciones | `ManageGuild` |
 
 #### Configuración de Twitch
 - **Canal de Notificaciones**: Canal donde se enviarán las notificaciones
@@ -262,12 +275,23 @@ El bot requiere los siguientes permisos en el servidor:
 | `/welcome` | Configura el canal de bienvenida | `ManageGuild` |
 | `/autorole` | Gestiona roles automáticos | `Administrator` |
 | `/setup-ranks` | Configura el sistema de rangos | `Administrator` |
+| `/permissions` | Gestiona permisos del bot | `Administrator` |
 
 ### Comandos de Utilidad
 | Comando | Descripción | Permisos |
 |---------|-------------|-----------|
 | `/rank` | Muestra tu nivel actual | `None` |
 | `/leaderboard` | Muestra la tabla de clasificación | `None` |
+| `/stats` | Muestra estadísticas del servidor | `None` |
+
+### Comandos de Twitch
+| Comando | Descripción | Permisos |
+|---------|-------------|-----------|
+| `/twitch channel` | Configura el canal de notificaciones | `ManageGuild` |
+| `/twitch add` | Agrega un streamer para seguir | `ManageGuild` |
+| `/twitch remove` | Elimina un streamer de la lista | `ManageGuild` |
+| `/twitch settings` | Configura opciones de notificación | `ManageGuild` |
+| `/twitch test` | Prueba las notificaciones | `ManageGuild` |
 
 ## 📡 Eventos
 
@@ -279,6 +303,11 @@ El bot requiere los siguientes permisos en el servidor:
 ### Eventos de Servidor
 - `guildCreate`: Configuración inicial
 - `guildDelete`: Limpieza de datos
+
+### Eventos de Twitch
+- `streamOnline`: Notificación de inicio de stream
+- `streamOffline`: Notificación de fin de stream
+- `streamUpdate`: Actualización de información del stream
 
 ## 🤝 Contribución
 
