@@ -1,11 +1,10 @@
 // discord/commands/commands.module.ts
 import { Module } from '@nestjs/common';
-import { AdminCommandsModule } from './admin/admin.module';
+import { AdminCommandsModule } from './admin/admin-commands.module';
 import { UtilityCommandModule } from './utility/utility.command.module';
 
-
 @Module({
-    providers: [],
-    imports: [AdminCommandsModule, UtilityCommandModule]
+    imports: [AdminCommandsModule, UtilityCommandModule],
+    exports: [AdminCommandsModule, UtilityCommandModule]
 })
 export class CommandsModule { }

@@ -11,6 +11,8 @@ import { RoleOptionDto } from './option.dto';
     description: 'Configuración de roles automáticos',
     defaultMemberPermissions: 'Administrator',
 })
+
+
 export class AutoRoleCommand {
     constructor(private readonly autoRoleService: AutoRoleService) { }
 

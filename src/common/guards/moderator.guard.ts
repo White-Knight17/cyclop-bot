@@ -5,7 +5,7 @@ import { RolePermissionsService } from '../../features/permissions/role-permissi
 import { NecordExecutionContext } from 'necord';
 
 @Injectable()
-export class AdminGuard implements CanActivate {
+export class ModeratorGuard implements CanActivate {
     constructor(
         private reflector: Reflector,
         private rolePermissionsService: RolePermissionsService
@@ -33,9 +33,16 @@ export class AdminGuard implements CanActivate {
 
         // Verificar roles de administrador
         const adminRoles = await this.rolePermissionsService.getAdminRoles(interaction.guildId);
-        const hasAdminRole = member.roles.cache.some(role => adminRoles.includes(role.id));
+        const isAdmin = member.roles.cache.some(role => adminRoles.includes(role.id));
+        if (isAdmin) {
+            return true;
+        }
 
-        if (!hasAdminRole) {
+        // Verificar roles de moderador
+        const moderatorRoles = await this.rolePermissionsService.getModeratorRoles(interaction.guildId);
+        const isModerator = member.roles.cache.some(role => moderatorRoles.includes(role.id));
+
+        if (!isModerator) {
             await interaction.reply({
                 content: '❌ No tienes permisos para usar este comando.',
                 ephemeral: true
@@ -45,4 +52,4 @@ export class AdminGuard implements CanActivate {
 
         return true;
     }
-}
+} 

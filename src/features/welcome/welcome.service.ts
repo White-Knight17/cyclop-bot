@@ -1,158 +1,135 @@
 // features/welcome/services/welcome.service.ts
 import { Injectable, Logger } from '@nestjs/common';
-import { WelcomeRepository } from 'src/database/repositories/welcome.repository';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { WelcomeConfig } from '../../database/schemas/welcome.schema';
+import { GuildMember, TextChannel } from 'discord.js';
 import { ImageBuilderUtil } from './image-builder.util';
-import { GuildMember, PermissionsBitField, TextChannel } from 'discord.js';
 
 @Injectable()
 export class WelcomeService {
     private readonly logger = new Logger(WelcomeService.name);
 
     constructor(
-        private readonly repository: WelcomeRepository,
+        @InjectModel(WelcomeConfig.name) private welcomeModel: Model<WelcomeConfig>,
         private readonly imageBuilder: ImageBuilderUtil
     ) { }
 
-    async setWelcomeChannel(guildId: string, channelId: string) {
+    async setWelcomeChannel(guildId: string, channelId: string, message?: string) {
         if (!guildId || !channelId) {
             throw new Error('Faltan parámetros requeridos');
         }
-        return this.repository.updateChannel(guildId, channelId);
-    }
 
-    async handleNewMember(member: GuildMember) {
         try {
-            // 1. Validaciones iniciales
-            if (!this.validateMember(member)) {
-                return;
-            }
-
-            // 2. Obtener configuración
-            const config = await this.getWelcomeConfig(member.guild.id);
-            if (!config) {
-                return;
-            }
-
-            // 3. Validar y obtener el canal
-            const channel = await this.validateAndGetChannel(member, config.channelId);
-            if (!channel) {
-                return;
-            }
-
-            // 4. Generar y enviar la bienvenida
-            await this.sendWelcomeMessage(member, channel);
-
-        } catch (error) {
-            this.logger.error(
-                `Error al procesar bienvenida para ${member.user.tag}: ${error.message}`
+            const config = await this.welcomeModel.findOneAndUpdate(
+                { guildId },
+                {
+                    channelId,
+                    message: message || '¡Bienvenido {user} a {server}!',
+                    enabled: true
+                },
+                { upsert: true, new: true }
             );
+
+            this.logger.log(`Canal de bienvenida configurado para el servidor ${guildId}: ${channelId}`);
+            return config;
+        } catch (error) {
+            this.logger.error(`Error al configurar canal de bienvenida: ${error.message}`);
             throw error;
         }
     }
 
-    private validateMember(member: GuildMember): boolean {
-        if (!member?.guild?.id || !member?.user) {
-            this.logger.warn('Miembro inválido recibido en handleNewMember');
-            return false;
+    async disableWelcome(guildId: string) {
+        if (!guildId) {
+            throw new Error('ID del servidor requerido');
         }
 
-        if (member.user.bot) {
-            this.logger.debug(`Bot ${member.user.tag} ignorado en bienvenida`);
-            return false;
-        }
+        try {
+            const config = await this.welcomeModel.findOneAndUpdate(
+                { guildId },
+                { enabled: false },
+                { new: true }
+            );
 
-        return true;
+            this.logger.log(`Mensajes de bienvenida deshabilitados para el servidor ${guildId}`);
+            return config;
+        } catch (error) {
+            this.logger.error(`Error al deshabilitar mensajes de bienvenida: ${error.message}`);
+            throw error;
+        }
     }
 
-    private async getWelcomeConfig(guildId: string) {
+    async getWelcomeConfig(guildId: string) {
+        if (!guildId) {
+            throw new Error('ID del servidor requerido');
+        }
+
         try {
-            const config = await this.repository.getOrCreate(guildId);
-
-            if (!config?.enabled) {
-                this.logger.debug(`Bienvenida deshabilitada para el servidor ${guildId}`);
+            const config = await this.welcomeModel.findOne({ guildId });
+            if (!config) {
+                this.logger.debug(`No hay configuración de bienvenida para el servidor ${guildId}`);
                 return null;
             }
-
-            if (!config.channelId) {
-                this.logger.warn(`No hay canal de bienvenida configurado para el servidor ${guildId}`);
-                return null;
-            }
-
-            return {
-                ...config,
-                channelId: config.channelId // Aseguramos que channelId no es undefined
-            };
+            return config;
         } catch (error) {
             this.logger.error(`Error al obtener configuración de bienvenida: ${error.message}`);
             throw error;
         }
     }
 
-    private async validateAndGetChannel(member: GuildMember, channelId: string): Promise<TextChannel | null> {
-        const channel = member.guild.channels.cache.get(channelId);
-
-        if (!channel) {
-            this.logger.warn(
-                `Canal de bienvenida no encontrado en ${member.guild.name} (ID: ${channelId})`
-            );
-            return null;
-        }
-
-        if (!channel.isTextBased()) {
-            this.logger.warn(
-                `El canal ${channel.name} no es un canal de texto en ${member.guild.name}`
-            );
-            return null;
-        }
-
-        // Verificar permisos del bot
-        const botMember = member.guild.members.me;
-        if (!botMember) {
-            this.logger.error('No se pudo obtener el miembro del bot');
-            return null;
-        }
-
-        const requiredPermissions = [
-            PermissionsBitField.Flags.ViewChannel,
-            PermissionsBitField.Flags.SendMessages,
-            PermissionsBitField.Flags.AttachFiles,
-            PermissionsBitField.Flags.EmbedLinks
-        ];
-
-        const missingPermissions = requiredPermissions.filter(
-            permission => !botMember.permissionsIn(channel).has(permission)
-        );
-
-        if (missingPermissions.length > 0) {
-            this.logger.warn(
-                `Permisos insuficientes en el canal ${channel.name}: ${missingPermissions.join(', ')}`
-            );
-            return null;
-        }
-
-        return channel as TextChannel;
-    }
-
-    private async sendWelcomeMessage(member: GuildMember, channel: TextChannel) {
+    async sendWelcomeMessage(member: GuildMember): Promise<boolean> {
         try {
+            // Validaciones básicas
+            if (!member?.guild || !member?.user) {
+                this.logger.warn('Miembro inválido para mensaje de bienvenida');
+                return false;
+            }
+
+            // Obtener configuración
+            const config = await this.getWelcomeConfig(member.guild.id);
+            if (!config?.enabled || !config.channelId) {
+                this.logger.debug(`Bienvenida no configurada o deshabilitada en ${member.guild.name}`);
+                return false;
+            }
+
+            // Obtener canal
+            const channel = member.guild.channels.cache.get(config.channelId) as TextChannel;
+            if (!channel) {
+                this.logger.warn(`Canal de bienvenida no encontrado: ${config.channelId} en ${member.guild.name}`);
+                return false;
+            }
+
+            // Verificar permisos del bot
+            const botMember = member.guild.members.me;
+            if (!botMember?.permissionsIn(channel).has(['SendMessages', 'ViewChannel', 'AttachFiles'])) {
+                this.logger.warn(`Bot sin permisos necesarios en el canal de bienvenida de ${member.guild.name}`);
+                return false;
+            }
+
+            // Generar imagen de bienvenida
             const welcomeImage = await this.imageBuilder.generateWelcomeCard(member);
 
+            // Enviar mensaje con la imagen
             await channel.send({
-                content: `¡Bienvenido ${member} al servidor! 🎉`,
+                content: config.message
+                    .replace('{user}', member.toString())
+                    .replace('{server}', member.guild.name)
+                    .replace('{username}', member.user.username)
+                    .replace('{mention}', member.toString()),
                 files: [{
                     attachment: welcomeImage,
                     name: 'welcome.png'
                 }]
             });
 
-            this.logger.log(
-                `Bienvenida enviada a ${member.user.tag} en ${channel.name} (${member.guild.name})`
-            );
+            this.logger.log(`Mensaje de bienvenida enviado para ${member.user.tag} en ${member.guild.name}`);
+            return true;
+
         } catch (error) {
             this.logger.error(
-                `Error al enviar mensaje de bienvenida: ${error.message}`
+                `Error al enviar mensaje de bienvenida a ${member?.user?.tag || 'Miembro Desconocido'}: ${error.message}`
             );
-            throw error;
+            return false;
         }
     }
 }

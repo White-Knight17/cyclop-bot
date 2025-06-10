@@ -6,11 +6,14 @@ export class WelcomeConfig extends Document {
     @Prop({ required: true, index: true })
     guildId: string;
 
-    @Prop()
-    channelId?: string;
+    @Prop({ required: true })
+    channelId: string;
 
     @Prop({ default: true })
     enabled: boolean;
+
+    @Prop({ default: '¡Bienvenido {user} a {server}!' })
+    message: string;
 }
 
 export const WelcomeSchema = SchemaFactory.createForClass(WelcomeConfig);
