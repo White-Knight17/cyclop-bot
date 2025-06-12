@@ -1,18 +1,15 @@
 // discord/discord.module.ts
+import { Partials, GuildMember, Events } from 'discord.js';
+import { NecordModule, On } from 'necord';
 import { Module } from '@nestjs/common';
-import { NecordModule } from 'necord';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { DiscordService } from './providers/discord.service';
 import { CommandsModule } from './commands/commands.module';
 import { EventsModule } from './events/events.module';
-import { APP_INTERCEPTOR } from '@nestjs/core';
 import { ErrorInterceptor } from '../common/interceptors/error.interceptor';
 import { GuardsModule } from '../common/guards/guards.module';
 import { PermissionsModule } from '../features/permissions/permissions.module';
-import { Partials } from 'discord.js';
-import { On } from 'necord';
-import { Events } from 'discord.js';
-import { GuildMember } from 'discord.js';
 
 @Module({
     imports: [
