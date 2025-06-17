@@ -47,7 +47,7 @@ export class RanksCommand {
                 });
             }
 
-            const rankInfo = this.rankService.getRankInfo(profile.level);
+            const rankInfo = profile.rankInfo;
             const progressPercentage = rankInfo.rankProgress.toFixed(1);
 
             const embed = new EmbedBuilder()
@@ -91,7 +91,10 @@ export class RanksCommand {
 
         try {
             const user = interaction.user;
+            console.log(`Obteniendo perfil para usuario: ${user.id}`);
+
             const profile = await this.levelingService.getProfile(user.id);
+            console.log('Perfil obtenido:', JSON.stringify(profile, null, 2));
 
             if (!profile) {
                 return interaction.editReply({
@@ -99,8 +102,11 @@ export class RanksCommand {
                 });
             }
 
-            const rankInfo = this.rankService.getRankInfo(profile.level);
+            const rankInfo = profile.rankInfo;
             const progressPercentage = Math.min(100, Math.max(0, profile.progress));
+
+            console.log('Posición del usuario:', profile.position);
+            console.log('Tipo de posición:', typeof profile.position);
 
             const embed = new EmbedBuilder()
                 .setTitle(`📊 Perfil de ${user.displayName}`)
@@ -108,7 +114,7 @@ export class RanksCommand {
                 .setThumbnail(user.displayAvatarURL({ size: 256 }))
                 .addFields(
                     { name: 'Nivel', value: `\`${profile.level}\``, inline: true },
-                    { name: 'Posición', value: `\`#${profile.rank}\``, inline: true },
+                    { name: 'Posición', value: `\`#${profile.position}\``, inline: true },
                     { name: 'Rango', value: rankInfo.name, inline: true },
                     { name: 'Multiplicador', value: `\`${rankInfo.multiplier}x\``, inline: true },
                     { name: 'XP Total', value: `\`${Math.max(0, profile.totalXp)} XP\``, inline: true },

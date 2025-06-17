@@ -30,6 +30,12 @@ export class User extends Document {
 
     @Prop()
     lastMessageTimestamp?: Date; // Para controlar ganancia de XP
+
+    @Prop({ default: Date.now })
+    joinDate: Date; // Fecha de registro del usuario
+
+    @Prop({ default: Date.now })
+    lastActivity: Date; // Última actividad del usuario
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

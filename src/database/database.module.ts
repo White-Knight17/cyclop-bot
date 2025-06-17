@@ -8,12 +8,15 @@ import { MongooseModule } from '@nestjs/mongoose';
         MongooseModule.forRootAsync({
             imports: [ConfigModule],
             useFactory: async (configService: ConfigService) => {
-                const uri = configService.get<string>('MONGO_DB_URI'.trim());
-                if (!uri) {
-                    throw new Error('Database URI is not configured');
+                const dbConfig = configService.get('app.database');
+
+                if (!dbConfig?.uri) {
+                    throw new Error('MONGO_URI o MONGODB_URI no está configurada en las variables de entorno');
                 }
+
                 return {
-                    uri: uri
+                    uri: dbConfig.uri,
+                    ...dbConfig.options,
                 };
             },
             inject: [ConfigService],
