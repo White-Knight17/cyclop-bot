@@ -23,8 +23,9 @@ export class TwitchService {
     }
 
     private initializeTwitchClient() {
-        const clientId = this.configService.get<string>('twitch.clientId');
-        const clientSecret = this.configService.get<string>('twitch.clientSecret');
+        const twitchConfig = this.configService.get('app.twitch');
+        const clientId = twitchConfig?.clientId;
+        const clientSecret = twitchConfig?.clientSecret;
 
         if (!clientId || !clientSecret) {
             this.logger.error('Twitch credentials not configured');
@@ -52,6 +53,11 @@ export class TwitchService {
 
     async addStreamer(guildId: string, streamerName: string) {
         try {
+            if (!this.apiClient || !this.apiClient.users) {
+                this.logger.error('La API de Twitch no está inicializada correctamente');
+                throw new Error('La API de Twitch no está disponible. Revisa la configuración del bot y las credenciales.');
+            }
+
             // Verificar si el streamer existe
             const user = await this.apiClient.users.getUserByName(streamerName);
             if (!user) {
