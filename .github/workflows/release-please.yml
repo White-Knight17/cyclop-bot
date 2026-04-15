@@ -9,9 +9,8 @@ jobs:
   release-please:
     runs-on: ubuntu-latest
     steps:
-      - uses: google-github-actions/release-please-action@v4
+      - uses: googleapis/release-please-action@5c625bfb5d1ff62eadeeb3772007f7f66fdcf071
         with:
           release-type: node
           package-name: discord-cyclop
-          changelog-types: '[{"type": "feat", "section": "Features"}, {"type": "fix", "section": "Bug Fixes"}, {"type": "docs", "section": "Documentation"}, {"type": "refactor", "section": "Code Refactoring"}, {"type": "perf", "section": "Performance Improvements"}, {"type": "test", "section": "Tests"}, {"type": "chore", "section": "Chores"}]'
           github-token: ${{ secrets.GITHUB_TOKEN }}
