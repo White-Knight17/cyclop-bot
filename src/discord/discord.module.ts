@@ -12,60 +12,60 @@ import { GuardsModule } from '../common/guards/guards.module';
 import { PermissionsModule } from '../features/permissions/permissions.module';
 
 @Module({
-    imports: [
-        NecordModule.forRootAsync({
-            imports: [ConfigModule],
-            useFactory: async (configService: ConfigService) => {
-                const discordConfig = configService.get('app.discord');
-                const appConfig = configService.get('app.app');
+  imports: [
+    NecordModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => {
+        const discordConfig = configService.get('app.discord');
+        const appConfig = configService.get('app.app');
 
-                if (!discordConfig?.token) {
-                    throw new Error('Discord token no está configurado');
-                }
-
-                return {
-                    token: discordConfig.token,
-                    intents: discordConfig.intents,
-                    partials: [
-                        Partials.Channel,
-                        Partials.GuildMember,
-                        Partials.Message,
-                        Partials.User,
-                        Partials.Reaction,
-                        Partials.GuildScheduledEvent,
-                    ],
-                    failOnLogin: true,
-                    logger: {
-                        level: appConfig?.nodeEnv === 'production' ? 'warn' : 'debug',
-                    },
-                };
-            },
-            inject: [ConfigService]
-        }),
-        CommandsModule,
-        EventsModule,
-        GuardsModule,
-        PermissionsModule
-    ],
-    providers: [
-        DiscordService,
-        {
-            provide: APP_INTERCEPTOR,
-            useClass: ErrorInterceptor
+        if (!discordConfig?.token) {
+          throw new Error('Discord token no está configurado');
         }
-    ],
-    exports: [DiscordService]
+
+        return {
+          token: discordConfig.token,
+          intents: discordConfig.intents,
+          partials: [
+            Partials.Channel,
+            Partials.GuildMember,
+            Partials.Message,
+            Partials.User,
+            Partials.Reaction,
+            Partials.GuildScheduledEvent,
+          ],
+          failOnLogin: true,
+          logger: {
+            level: appConfig?.nodeEnv === 'production' ? 'warn' : 'debug',
+          },
+        };
+      },
+      inject: [ConfigService],
+    }),
+    CommandsModule,
+    EventsModule,
+    GuardsModule,
+    PermissionsModule,
+  ],
+  providers: [
+    DiscordService,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: ErrorInterceptor,
+    },
+  ],
+  exports: [DiscordService],
 })
 export class DiscordModule {
-    private readonly logger = new Logger(DiscordModule.name);
+  private readonly logger = new Logger(DiscordModule.name);
 
-    @On(Events.GuildMemberAdd)
-    async handle(member: GuildMember) {
-        try {
-            this.logger.log(`Nuevo miembro unido: ${member.user.tag} (${member.guild.name})`);
-            // La implementación específica se maneja en el evento correspondiente
-        } catch (error) {
-            this.logger.error(`Error al manejar nuevo miembro: ${error.message}`, error.stack);
-        }
+  @On(Events.GuildMemberAdd)
+  handle(member: GuildMember) {
+    try {
+      this.logger.log(`Nuevo miembro unido: ${member.user.tag} (${member.guild.name})`);
+      // La implementación específica se maneja en el evento correspondiente
+    } catch (error) {
+      this.logger.error(`Error al manejar nuevo miembro: ${error.message}`, error.stack);
     }
+  }
 }

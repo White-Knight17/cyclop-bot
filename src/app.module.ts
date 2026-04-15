@@ -30,7 +30,7 @@ import configuration from './config/configuration';
     AutoRoleModule,
     WelcomeModule,
     LevelingModule,
-    DiscordModule
-  ]
+    DiscordModule,
+  ],
 })
-export class AppModule { }
+export class AppModule {}

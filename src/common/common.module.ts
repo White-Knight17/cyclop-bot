@@ -5,15 +5,8 @@ import { PermissionsModule } from '../features/permissions/permissions.module';
 
 @Global()
 @Module({
-    imports: [PermissionsModule],
-    providers: [
-        AdminGuard,
-        ModeratorGuard
-    ],
-    exports: [
-        AdminGuard,
-        ModeratorGuard,
-        PermissionsModule
-    ]
+  imports: [PermissionsModule],
+  providers: [AdminGuard, ModeratorGuard],
+  exports: [AdminGuard, ModeratorGuard, PermissionsModule],
 })
-export class CommonModule { } 
+export class CommonModule {}

@@ -4,7 +4,7 @@ import { AdminCommandsModule } from './admin/admin-commands.module';
 import { UtilityCommandModule } from './utility/utility.command.module';
 
 @Module({
-    imports: [AdminCommandsModule, UtilityCommandModule],
-    exports: [AdminCommandsModule, UtilityCommandModule]
+  imports: [AdminCommandsModule, UtilityCommandModule],
+  exports: [AdminCommandsModule, UtilityCommandModule],
 })
-export class CommandsModule { }
+export class CommandsModule {}

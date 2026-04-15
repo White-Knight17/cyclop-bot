@@ -5,10 +5,8 @@ import { AutoRoleService } from './autorole.service';
 import { AutoRole, AutoRoleSchema } from '../../database/schemas/autorole.schema';
 
 @Module({
-  imports: [
-    MongooseModule.forFeature([{ name: AutoRole.name, schema: AutoRoleSchema }])
-  ],
+  imports: [MongooseModule.forFeature([{ name: AutoRole.name, schema: AutoRoleSchema }])],
   providers: [AutoRoleService],
-  exports: [AutoRoleService]
+  exports: [AutoRoleService],
 })
-export class AutoRoleModule { }
+export class AutoRoleModule {}

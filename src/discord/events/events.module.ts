@@ -7,20 +7,8 @@ import { WelcomeModule } from '../../features/welcome/welcome.module';
 import { MemberEventsListener } from './member/member-events.listener';
 
 @Module({
-    imports: [
-        LevelingModule,
-        AutoRoleModule,
-        WelcomeModule
-    ],
-    providers: [
-        GuildMemberAddEvent,
-        MessageCreateEvent,
-        MemberEventsListener
-    ],
-    exports: [
-        GuildMemberAddEvent,
-        MessageCreateEvent,
-        MemberEventsListener
-    ]
+  imports: [LevelingModule, AutoRoleModule, WelcomeModule],
+  providers: [GuildMemberAddEvent, MessageCreateEvent, MemberEventsListener],
+  exports: [GuildMemberAddEvent, MessageCreateEvent, MemberEventsListener],
 })
-export class EventsModule { }
+export class EventsModule {}

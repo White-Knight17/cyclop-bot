@@ -18,38 +18,38 @@ import { SetupRanksCommand } from './setup-ranks.command';
 import { ResetLevelCommand } from './reset-level.command';
 
 @Module({
-    imports: [
-        PermissionsModule,
-        AutoRoleModule,
-        LevelingModule,
-        ActivitiesModule,
-        WelcomeModule,
-        TwitchModule,
-        EventsModule
-    ],
-    providers: [
-        DeleteRanksCommand,
-        TestAdminCommand,
-        SetAdminRoleCommand,
-        AutoRoleCommand,
-        ActivitiesCommand,
-        WelcomeCommand,
-        TwitchCommand,
-        TestMemberCommand,
-        SetupRanksCommand,
-        ResetLevelCommand
-    ],
-    exports: [
-        DeleteRanksCommand,
-        TestAdminCommand,
-        SetAdminRoleCommand,
-        AutoRoleCommand,
-        ActivitiesCommand,
-        WelcomeCommand,
-        TwitchCommand,
-        TestMemberCommand,
-        SetupRanksCommand,
-        ResetLevelCommand
-    ]
+  imports: [
+    PermissionsModule,
+    AutoRoleModule,
+    LevelingModule,
+    ActivitiesModule,
+    WelcomeModule,
+    TwitchModule,
+    EventsModule,
+  ],
+  providers: [
+    DeleteRanksCommand,
+    TestAdminCommand,
+    SetAdminRoleCommand,
+    AutoRoleCommand,
+    ActivitiesCommand,
+    WelcomeCommand,
+    TwitchCommand,
+    TestMemberCommand,
+    SetupRanksCommand,
+    ResetLevelCommand,
+  ],
+  exports: [
+    DeleteRanksCommand,
+    TestAdminCommand,
+    SetAdminRoleCommand,
+    AutoRoleCommand,
+    ActivitiesCommand,
+    WelcomeCommand,
+    TwitchCommand,
+    TestMemberCommand,
+    SetupRanksCommand,
+    ResetLevelCommand,
+  ],
 })
-export class AdminCommandsModule { } 
+export class AdminCommandsModule {}

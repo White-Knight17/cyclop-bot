@@ -6,26 +6,26 @@ import { WelcomeConfig } from '../schemas/welcome.schema';
 
 @Injectable()
 export class WelcomeRepository {
-    constructor(
-        @InjectModel(WelcomeConfig.name)
-        private readonly welcomeModel: Model<WelcomeConfig>,
-    ) { }
+  constructor(
+    @InjectModel(WelcomeConfig.name)
+    private readonly welcomeModel: Model<WelcomeConfig>
+  ) {}
 
-    async getOrCreate(guildId: string): Promise<WelcomeConfig> {
-        const config = await this.welcomeModel.findOne({ guildId });
-        return config || this.welcomeModel.create({ guildId });
+  async getOrCreate(guildId: string): Promise<WelcomeConfig> {
+    const config = await this.welcomeModel.findOne({ guildId });
+    return config || this.welcomeModel.create({ guildId });
+  }
+
+  async updateChannel(guildId: string, channelId: string): Promise<WelcomeConfig> {
+    const config = await this.welcomeModel.findOneAndUpdate(
+      { guildId },
+      { channelId, enabled: true },
+      { new: true, upsert: true }
+    );
+
+    if (!config) {
+      throw new Error('No se pudo actualizar la configuración');
     }
-
-    async updateChannel(guildId: string, channelId: string): Promise<WelcomeConfig> {
-        const config = await this.welcomeModel.findOneAndUpdate(
-            { guildId },
-            { channelId, enabled: true },
-            { new: true, upsert: true }
-        );
-
-        if (!config) {
-            throw new Error('No se pudo actualizar la configuración');
-        }
-        return config;
-    }
+    return config;
+  }
 }

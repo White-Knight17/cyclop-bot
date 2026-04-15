@@ -6,13 +6,11 @@ import { TwitchConfig, TwitchSchema } from 'src/database/schemas/twitch.schema';
 import { ConfigModule } from '@nestjs/config';
 
 @Module({
-    imports: [
-        ConfigModule,
-        MongooseModule.forFeature([
-            { name: TwitchConfig.name, schema: TwitchSchema },
-        ]),
-    ],
-    providers: [TwitchService, TwitchRepository],
-    exports: [TwitchService],
+  imports: [
+    ConfigModule,
+    MongooseModule.forFeature([{ name: TwitchConfig.name, schema: TwitchSchema }]),
+  ],
+  providers: [TwitchService, TwitchRepository],
+  exports: [TwitchService],
 })
-export class TwitchModule { } 
+export class TwitchModule {}

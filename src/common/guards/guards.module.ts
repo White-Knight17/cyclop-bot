@@ -4,8 +4,8 @@ import { ModeratorGuard } from './moderator.guard';
 import { PermissionsModule } from '../../features/permissions/permissions.module';
 
 @Module({
-    imports: [PermissionsModule],
-    providers: [AdminGuard, ModeratorGuard],
-    exports: [AdminGuard, ModeratorGuard]
+  imports: [PermissionsModule],
+  providers: [AdminGuard, ModeratorGuard],
+  exports: [AdminGuard, ModeratorGuard],
 })
-export class GuardsModule { } 
+export class GuardsModule {}
